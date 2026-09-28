@@ -1,37 +1,38 @@
 import java.util.*;
 
 class Solution {
-    public static final int DAY = 1000*60*60*24;
     public int solution(String[] lines) {
-        int[] prefixSum = new int[DAY + 1];
+        int n = lines.length;
+        int[] starts = new int[n];
+        int[] ends = new int[n];
         
-        for(String line: lines){
-            String[] log = line.split(" ");
+        for (int i = 0; i < n; i++) {
+            String[] log = lines[i].split(" ");
             String[] time = log[1].split(":");
-            double s = Double.parseDouble(log[2].substring(0, log[2].length() - 1));
-            int t = (int) (s * 1000.0);
-            
-            int[] index = setIndex(time, t);
-            int start = index[0], end = index[1];
-            prefixSum[start]++;
-            prefixSum[end+1]--;
+
+            int h = Integer.parseInt(time[0]);
+            int m = Integer.parseInt(time[1]);
+            int sMs = Integer.parseInt(time[2].replace(".", ""));
+            int end = (h * 3600 + m * 60) * 1000 + sMs;
+
+            String dur = log[2];
+            int t = (int) Math.round(
+                Double.parseDouble(dur.substring(0, dur.length() - 1)) * 1000);
+
+            ends[i] = end;
+            starts[i] = end - t + 1;
         }
         
-        int maxReq = 0;
-        for(int i = 0; i <= DAY; i++){
-            if(i > 0) prefixSum[i] += prefixSum[i-1];
-            maxReq = Math.max(maxReq, prefixSum[i]);
+        int answer = 0;
+        for (int i = 0; i < n; i++) {
+            int winStart = ends[i];
+            int winEnd = winStart + 999;
+            int cnt = 0;
+            for (int j = 0; j < n; j++) {
+                if (starts[j] <= winEnd && ends[j] >= winStart) cnt++;
+            }
+            answer = Math.max(answer, cnt);
         }
-        
-        return maxReq;
-    }
-    
-    public static int[] setIndex(String[] time, int t){
-        int h = Integer.parseInt(time[0]);
-        int m = Integer.parseInt(time[1]);
-        int ms = (int)(Double.parseDouble(time[2])*1000);
-        int end = h*60*60*1000 + m*60*1000 + ms;
-        int start = end - t < 1000 ? 0 : end - t - 998;
-        return new int[]{start, end};
+        return answer;
     }
 }

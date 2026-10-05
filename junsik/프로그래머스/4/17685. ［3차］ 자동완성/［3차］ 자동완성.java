@@ -2,7 +2,7 @@
 import java.util.*;
 
 class Node {
-    Map<Character, Node> child = new HashMap<>();
+    Node[] child = new Node[26];
     int cnt = 0;
 }
 
@@ -10,7 +10,6 @@ class Solution {
     final Node root = new Node();
     
     public int solution(String[] words) {
-        
         for (String word : words) {
             makeDict(word);
         }
@@ -24,8 +23,10 @@ class Solution {
     
     void makeDict(String word) {
         Node node = root;
-        for (char ch : word.toCharArray()) {
-            node = node.child.computeIfAbsent(ch, c -> new Node());
+        for (int i = 0; i < word.length(); i++) {
+            int idx = word.charAt(i) - 'a';
+            if (node.child[idx] == null) node.child[idx] = new Node();
+            node = node.child[idx];
             node.cnt++;
         }
     }
@@ -33,8 +34,9 @@ class Solution {
     int search(String word) {
         int cnt = 0;
         Node node = root;
-        for (char ch : word.toCharArray()) {
-            node = node.child.get(ch);
+        for (int i = 0; i < word.length(); i++) {
+            int idx = word.charAt(i) - 'a';
+            node = node.child[idx];
             cnt++;
             if (node.cnt == 1) break;
         }

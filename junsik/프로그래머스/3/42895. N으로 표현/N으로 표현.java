@@ -1,5 +1,3 @@
-/*
-*/
 import java.util.*;
 
 class Solution {
@@ -26,7 +24,8 @@ class Solution {
         while (!pq.isEmpty()) {
             int[] now = pq.poll();
             int n = now[1];
-            if (n == 0) continue;
+            if (n == 0) continue; // 0이라면 횟수만 추가됨.
+            
             for (int[] nums : Ns) {
                 int nCount = now[0] + nums[0]; int ns = nums[1];
                 int[] cases = {n + ns, n - ns, ns - n, n * ns, ns / n, n / ns};

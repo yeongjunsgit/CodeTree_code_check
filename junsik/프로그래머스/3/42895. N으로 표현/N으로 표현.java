@@ -3,14 +3,14 @@ import java.util.*;
 class Solution {
     public int solution(int N, int number) {
         int MAX = Integer.MAX_VALUE;
-        int M = number * N + 1;
+        int M = number * N;
         
         Map<Integer, Integer> dp = new HashMap<>(); // 숫자, 횟수
         PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] - o2[0]); // 횟수, 숫자
         List<int[]> Ns = new ArrayList<>(); // 횟수, 숫자
         
         int a = 1; int s = 1; int idx = 1;
-        while (s * N < M) {
+        while (s * N <= M) {
             int num = s * N;
             int[] ns = new int[]{idx, num};
             dp.put(num, idx);

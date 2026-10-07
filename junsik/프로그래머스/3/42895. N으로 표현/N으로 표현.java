@@ -2,46 +2,36 @@ import java.util.*;
 
 class Solution {
     public int solution(int N, int number) {
-        int MAX = Integer.MAX_VALUE;
-        int M = number * N;
-        
-        Map<Integer, Integer> dp = new HashMap<>(); // 숫자, 횟수
-        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] - o2[0]); // 횟수, 숫자
-        List<int[]> Ns = new ArrayList<>(); // 횟수, 숫자
-        
-        int a = 1; int s = 1; int idx = 1;
-        while (s * N <= M) {
-            int num = s * N;
-            int[] ns = new int[]{idx, num};
-            dp.put(num, idx);
-            pq.add(ns);
-            Ns.add(ns);
-            a *= 10;
-            s += a;
-            idx++;
-        }
-        
-        while (!pq.isEmpty()) {
-            int[] now = pq.poll();
-            int n = now[1];
-            if (n == 0) continue; // 0이라면 횟수만 추가됨.
-            
-            for (int[] nums : Ns) {
-                int nCount = now[0] + nums[0]; int ns = nums[1];
-                int[] cases = {n + ns, n - ns, ns - n, n * ns, ns / n, n / ns};
+        List<Set<Integer>> dp = new ArrayList<>();
+        for (int i = 0; i <= 8; i++) dp.add(new HashSet<>());
 
-                for (int num : cases) {
-                    if (num < -M || num > M) continue;
+        int repeated = 0;
+        for (int i = 1; i <= 8; i++) {
+            Set<Integer> current = dp.get(i);
 
-                    int times = dp.getOrDefault(num, MAX);
-                    if (times > nCount) {
-                        dp.put(num, nCount);
-                        pq.add(new int[]{nCount, num});
+            // N, NN, NNN, ... 형태의 수
+            repeated = repeated * 10 + N;
+            current.add(repeated);
+
+            // 총 i번의 사용을 j번과 i-j번으로 나눕니다.
+            for (int j = 1; j < i; j++) {
+                Set<Integer> left = dp.get(j);
+                Set<Integer> right = dp.get(i - j);
+
+                for (int a : left) {
+                    for (int b : right) {
+                        current.add(a + b);
+                        current.add(a - b);
+                        current.add(a * b);
+                        if (b != 0) current.add(a / b);
                     }
                 }
             }
+
+            if (current.contains(number)) {
+                return i;
+            }
         }
-        int answer = dp.getOrDefault(number, 9);
-        return answer > 8 ? -1 : answer;
+        return -1;
     }
 }
